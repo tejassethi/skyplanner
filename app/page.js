@@ -65,6 +65,7 @@ const Home = () => {
 
     setTextareaContent(newTexts.join(", "));
     setIsProcessing(false);
+    setJobProgress({});
   };
 
   const handleTextareaChange = (event) => {
@@ -101,7 +102,7 @@ const Home = () => {
               accept="image/*"
               key={inputKey}
               multiple
-              className="file-input file-input-bordered w-full max-w-xs mb-2"
+              className="file-input file-input-bordered w-full max-w-xs mb-2 focus:outline-none"
               onChange={handleImageUpload}
             />
             {isProcessing ? (
@@ -119,7 +120,7 @@ const Home = () => {
             ) : (
               <div className="h-40">
                 <textarea
-                  className="textarea textarea-bordered w-full h-full"
+                  className="textarea textarea-bordered w-full h-full text-[16px] focus:outline-none"
                   placeholder="Your completed courses. Ex. ICPY101, ICGC102, ICGS105 .."
                   value={textareaContent}
                   onChange={handleTextareaChange}
@@ -147,7 +148,9 @@ const Home = () => {
           </div>
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn">Close</button>
+              <button className="btn btn-primary outline-none focus:outline-none hover:outline-none">
+                Close
+              </button>
             </form>
           </div>
         </div>
