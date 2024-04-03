@@ -72,7 +72,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-dvh bg-gray-100">
       <div className="card bg-base-100 shadow-xl mx-5 lg:w-max ">
         <div className="flex-row w-full text-center pt-5">
           <ul className="steps w-full">
