@@ -10,9 +10,16 @@ import { IconContext } from "react-icons";
 
 const Home = () => {
   const [recognizedText, setRecognizedText] = useState([]);
+  const [inputKey, setInputKey] = useState(Date.now());
   const [textareaContent, setTextareaContent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const handleClear = () => {
+    setRecognizedText([]);
+    setTextareaContent("");
+    setInputKey(Date.now());
+  };
 
   const handleImageUpload = async (event) => {
     setIsProcessing(true);
@@ -52,7 +59,7 @@ const Home = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="card bg-base-100 shadow-xl w-[340px] md:w-[500px] lg:w-max ">
+      <div className="card bg-base-100 shadow-xl mx-5 lg:w-max ">
         <div className="flex-row w-full text-center pt-5">
           <ul className="steps w-full">
             <li className="step step-primary">Step 1</li>
@@ -83,6 +90,7 @@ const Home = () => {
             <input
               type="file"
               accept="image/*"
+              key={inputKey}
               multiple
               className="file-input file-input-bordered w-full max-w-xs mb-2"
               onChange={handleImageUpload}
@@ -107,6 +115,9 @@ const Home = () => {
             )}
           </div>
           <div className="card-actions justify-end">
+            <button className="btn btn-[#E6E5E5]" onClick={handleClear}>
+              Clear
+            </button>
             <button className="btn btn-primary">Next</button>
           </div>
         </div>
