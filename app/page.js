@@ -1,10 +1,10 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Tesseract from "tesseract.js";
-import image1 from "./IMG_6500.PNG";
-import image2 from "./IMG_6501.PNG";
-import image3 from "./IMG_6502.PNG";
+import image1 from "../images/IMG_6500.PNG";
+import image2 from "../images/IMG_6501.PNG";
+import image3 from "../images/IMG_6502.PNG";
 import { FiInfo } from "react-icons/fi";
 import { IconContext } from "react-icons";
 
@@ -20,19 +20,24 @@ const Home = () => {
     setJobProgress({});
   };
 
+  const modalRef = useRef(null);
+  const showModal = () => {
+    if (modalRef.current) {
+      modalRef.current.showModal();
+    }
+  };
+
   const handleImageUpload = async (event) => {
     setIsProcessing(true);
     const files = event.target.files;
     const newTexts = [];
-    let jobUpdates = {}; // Temporary object to hold job progress updates
+    let jobUpdates = {};
 
     const progressPromises = Array.from(files).map((file) =>
       Tesseract.recognize(file, "eng", {
         logger: (m) => {
           if (m.status === "recognizing text") {
-            // Update the job progress in the temporary object
             jobUpdates[m.jobId] = Math.round(m.progress * 100);
-            // Update the state with the latest job progress
             setJobProgress((prevProgress) => ({
               ...prevProgress,
               ...jobUpdates,
@@ -81,12 +86,7 @@ const Home = () => {
           <div>
             <div className="flex place-items-center space-x-2">
               <h1 className="card-title text-2xl mb-1">Input Images </h1>
-              <div
-                className=" cursor-pointer"
-                onClick={() =>
-                  document.getElementById("my_modal_2").showModal()
-                }
-              >
+              <div className="cursor-pointer" onClick={showModal}>
                 <IconContext.Provider value={{ color: "#949494" }}>
                   <FiInfo size={22} />
                 </IconContext.Provider>
@@ -135,14 +135,14 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <dialog id="my_modal_2" className="modal">
+      <dialog id="my_modal_2" className="modal" ref={modalRef}>
         <div className="modal-box ">
           <h3 className="font-bold text-xl">Sample Screenshots</h3>
           <div>
             <div className="flex overflow-scroll">
-              <Image src={image1} width={200} alt="image 1" />
-              <Image src={image2} width={200} alt="image 2" />
-              <Image src={image3} width={200} alt="image 3" />
+              <Image src={image1} width={200} height={433} alt="image 1" />
+              <Image src={image2} width={200} height={433} alt="image 2" />
+              <Image src={image3} width={200} height={433} alt="image 3" />
             </div>
           </div>
           <div className="modal-action">
