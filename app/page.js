@@ -9,32 +9,39 @@ import { FiInfo } from "react-icons/fi";
 import { IconContext } from "react-icons";
 
 const Home = () => {
-  const [recognizedText, setRecognizedText] = useState([]);
   const [inputKey, setInputKey] = useState(Date.now());
   const [textareaContent, setTextareaContent] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [jobProgress, setJobProgress] = useState({}); // Changed to track progress of each job
 
   const handleClear = () => {
-    setRecognizedText([]);
     setTextareaContent("");
     setInputKey(Date.now());
+    setJobProgress({});
   };
 
   const handleImageUpload = async (event) => {
     setIsProcessing(true);
     const files = event.target.files;
     const newTexts = [];
-    await Promise.all(
-      Array.from(files).map((file) =>
-        Tesseract.recognize(file, "eng", {
-          logger: (m) => {
-            console.log(m);
-            if (m.status === "recognizing text") {
-              setProgress(m.progress);
-            }
-          },
-        }).then((result) => {
+    let jobUpdates = {}; // Temporary object to hold job progress updates
+
+    const progressPromises = Array.from(files).map((file) =>
+      Tesseract.recognize(file, "eng", {
+        logger: (m) => {
+          if (m.status === "recognizing text") {
+            // Update the job progress in the temporary object
+            jobUpdates[m.jobId] = Math.round(m.progress * 100);
+            // Update the state with the latest job progress
+            setJobProgress((prevProgress) => ({
+              ...prevProgress,
+              ...jobUpdates,
+            }));
+            console.log(jobProgress);
+          }
+        },
+      })
+        .then((result) => {
           const matches = result.data.text.match(/\b[A-Z]{4}\d{3,4}\b/g);
           if (matches) {
             matches.forEach((match) => {
@@ -44,13 +51,15 @@ const Home = () => {
             });
           }
         })
-      )
+        .catch((error) => {
+          console.error("Error recognizing file:", error);
+        })
     );
 
-    setRecognizedText(newTexts);
+    await Promise.all(progressPromises);
+
     setTextareaContent(newTexts.join(", "));
     setIsProcessing(false);
-    setProgress(0);
   };
 
   const handleTextareaChange = (event) => {
@@ -96,18 +105,22 @@ const Home = () => {
               onChange={handleImageUpload}
             />
             {isProcessing ? (
-              <div className="h-40">
-                <progress
-                  className="progress w-full"
-                  value={Math.round(progress * 100)}
-                  max="100"
-                ></progress>
+              <div>
+                {Object.entries(jobProgress).map(([jobId, progress]) => (
+                  <div key={jobId} className="mb-4">
+                    <progress
+                      className="progress w-full"
+                      value={progress}
+                      max="100"
+                    ></progress>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="h-40">
                 <textarea
                   className="textarea textarea-bordered w-full h-full"
-                  placeholder="Your completed courses."
+                  placeholder="Your completed courses. Ex. ICPY101, ICGC102, ICGS105 .."
                   value={textareaContent}
                   onChange={handleTextareaChange}
                 ></textarea>
@@ -123,13 +136,13 @@ const Home = () => {
         </div>
       </div>
       <dialog id="my_modal_2" className="modal">
-        <div className="modal-box">
+        <div className="modal-box ">
           <h3 className="font-bold text-xl">Sample Screenshots</h3>
           <div>
             <div className="flex overflow-scroll">
               <Image src={image1} width={200} alt="image 1" />
-              <Image src={image1} width={200} alt="image 2" />
-              <Image src={image1} width={200} alt="image 3" />
+              <Image src={image2} width={200} alt="image 2" />
+              <Image src={image3} width={200} alt="image 3" />
             </div>
           </div>
           <div className="modal-action">
