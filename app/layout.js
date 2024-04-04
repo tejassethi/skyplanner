@@ -11,3 +11,5 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+//  These courses are available options based on your major of (Computer Science) and your starting year of (2022) for the upcoming trimester (T3/2023).
